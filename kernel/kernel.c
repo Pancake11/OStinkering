@@ -1,12 +1,12 @@
-#include "../drivers/ports.h"
-#include "utils.h"
 #include "../cpu/isr.h"
-#include "../cpu/idt.h"
+#include "../cpu/timer.h"
+#include "../drivers/keyboard.h"
 
 void main() {
 	isr_install();
 
-	//testing int
-	__asm__ __volatile__("int $2");
-	__asm__ __volatile__("int $3");
+	asm volatile("sti");
+	//init_timer(50);
+
+	init_keyboard();
 }

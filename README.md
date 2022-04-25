@@ -10,3 +10,10 @@ you should use qemu-system-x86_64 --nographic --curses main.bin to see if everyt
 displaying will be akward
 everything is described in this issue on git : https://github.com/cfenollosa/os-tutorial/issues/195
 using a normal linux vm/machine should work good too 
+
+makefile has been added and i have moved to VM  to dev this so it will prob not work with the WSL.
+furthermore i have cross compiled gcc to compile in ix86 (i386 or i686) in a special file so you should integrate the right path to compile in the makefile.
+this is now going a bit bigger will have soon to move on from bootsector to proper bootsuit for the projet.
+Will probably use the meaty skeleton from os dev wiki and will probably use the proposed implementation to multiboot the os.
+
+
