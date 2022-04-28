@@ -1,5 +1,5 @@
-#ifndef TYPES_H
-#define TYPES_H
+#ifndef TYPE_H
+#define TYPE_H
 
 #include <stdint.h>
 

@@ -1,6 +1,7 @@
 #include "screen.h"
 #include "../cpu/ports.h"
 #include "../libc/mem.h"
+#include <stdint.h>
 
 /* Declaration of private functions */
 int get_cursor_offset();
@@ -64,7 +65,7 @@ void kprint_backspace() {
  * Sets the video cursor to the returned offset
  */
 int print_char(char c, int col, int row, char attr) {
-    u8 *vidmem = (u8*) VIDEO_ADDRESS;
+    uint8_t *vidmem = (uint8_t*) VIDEO_ADDRESS;
     if (!attr) attr = WHITE_ON_BLACK;
 
     /* Error control: print a red 'E' if the coords aren't right */
@@ -81,7 +82,10 @@ int print_char(char c, int col, int row, char attr) {
     if (c == '\n') {
         row = get_offset_row(offset);
         offset = get_offset(0, row+1);
-    } else {
+    } else if (c == 0x08) { /* Backspace*/
+		vidmem[offset] = ' ';
+		vidmem[offset+1] = attr;
+	} else {
         vidmem[offset] = c;
         vidmem[offset+1] = attr;
         offset += 2;
@@ -90,9 +94,9 @@ int print_char(char c, int col, int row, char attr) {
 	//checks if offset is bigger than the screen size and scrolls if so
 	if (offset >= MAX_ROWS * MAX_COLS * 2){
 		int i;
-		for (i = 0; i < MAX_ROWS; i++) {
-			memory_copy((u8*) (get_offset(0, i) + VIDEO_ADDRESS),
-						(u8*) (get_offset(0,i - 1) + VIDEO_ADDRESS),
+		for (i = 1; i < MAX_ROWS; i++) {
+			memory_copy((uint8_t*) (get_offset(0, i) + VIDEO_ADDRESS),
+						(uint8_t*) (get_offset(0,i - 1) + VIDEO_ADDRESS),
 						MAX_COLS * 2);
 		}
 
@@ -131,7 +135,7 @@ void set_cursor_offset(int offset) {
 void clear_screen() {
     int screen_size = MAX_COLS * MAX_ROWS;
     int i;
-    u8 *screen = (u8*) VIDEO_ADDRESS;
+    uint8_t *screen = (uint8_t*) VIDEO_ADDRESS;
 
     for (i = 0; i < screen_size; i++) {
         screen[i*2] = ' ';
