@@ -10,7 +10,7 @@ void kernel_main() {
 
 	asm("int $2");
 	asm("int $3");
-
+	
 	kprint("Type somethin it will go through the kernel\n "
 		   " Type END (case sensitive) to halt CPU type PAGE to request a kmalloc\n> ");
 }
