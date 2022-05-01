@@ -3,6 +3,17 @@ HEADERS = $(wildcard kernel/*.h drivers/*.h cpu/*.h libc/*.h)
 # Nice syntax for file extension replacement
 OBJ = ${C_SOURCES:.c=.o cpu/interrupt.o} 
 
+LINKLIST = \
+libc/string.o \
+libc/mem.o \
+cpu/isr.o \
+cpu/idt.o \
+cpu/interrupt.o \
+cpu/ports.o \
+cpu/timer.o \
+drivers/keyboard.o \
+drivers/screen.o \
+
 # Change this if your cross-compiler is somewhere else
 CC = /usr/local/i386elfgcc/bin/i386-elf-gcc
 GDB = /usr/local/i386elfgcc/bin/i386-elf-gdb
@@ -29,6 +40,9 @@ run: os-image.bin
 debug: os-image.bin kernel.elf
 	qemu-system-i386 -s -fda os-image.bin -d guest_errors,int &
 	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
+
+myos.bin: arch/boot.o kernel/kernel.o
+	${CC} -T arch/linker.ld -o $@ -ffreestanding -O2 -nostdlib $^ ${LINKLIST} -lgcc
 
 # Generic rules for wildcards
 # To make an object, always compile from its .c
