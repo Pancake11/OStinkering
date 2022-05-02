@@ -26,27 +26,27 @@ const char sc_ascii[] = { '?', '?', '1', '2', '3', '4', '5', '6',
         'B', 'N', 'M', ',', '.', '/', '?', '?', '?', ' '};
 
 static void keyboard_callback(registers_t *regs) {
-	//the PIC leaves us the scancode in poty 0x60
-	uint8_t scancode = port_byte_in(0x60);
-	
-	if (scancode > SC_MAX) return;
-	if (scancode == BACKSPACE) {
-		backspace(key_buffer);
-		kprint_backspace();
-	} else if (scancode == ENTER) {
-		kprint("\n");
-		user_input(key_buffer); //kernel controlled fct
-		key_buffer[0] = '\0';
-	} else {
-		char letter = sc_ascii[(int) scancode];
-		//kprint only accepts char[]
-		char str[2] = {letter, '\0'};
-		append(key_buffer, letter);
-		kprint(str);
-	}
-	UNUSED(regs);
+    /* The PIC leaves us the scancode in port 0x60 */
+    uint8_t scancode = port_byte_in(0x60);
+    
+    if (scancode > SC_MAX) return;
+    if (scancode == BACKSPACE) {
+        backspace(key_buffer);
+        kprint_backspace();
+    } else if (scancode == ENTER) {
+        kprint("\n");
+        user_input(key_buffer); /* kernel-controlled function */
+        key_buffer[0] = '\0';
+    } else {
+        char letter = sc_ascii[(int)scancode];
+        /* Remember that kprint only accepts char[] */
+        char str[2] = {letter, '\0'};
+        append(key_buffer, letter);
+        kprint(str);
+    }
+    UNUSED(regs);
 }
 
 void init_keyboard() {
-	register_interrupt_handler(IRQ1, keyboard_callback);
+   register_interrupt_handler(IRQ1, keyboard_callback); 
 }

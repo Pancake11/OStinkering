@@ -42,6 +42,7 @@ debug: os-image.bin kernel.elf
 	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
 
 myos.bin: arch/boot.o kernel/kernel.o
+	make
 	${CC} -T arch/linker.ld -o $@ -ffreestanding -O2 -nostdlib $^ ${LINKLIST} -lgcc
 
 # Generic rules for wildcards

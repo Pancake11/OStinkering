@@ -45,11 +45,12 @@ void kprint(char *message) {
 }
 
 void kprint_backspace() {
-	int offset = get_cursor_offset() - 2;
-	int row = get_offset_row(offset);
-	int col = get_offset_col(offset);
-	print_char(0x80, col, row, WHITE_ON_BLACK);
+    int offset = get_cursor_offset()-2;
+    int row = get_offset_row(offset);
+    int col = get_offset_col(offset);
+    print_char(0x08, col, row, WHITE_ON_BLACK);
 }
+
 
 /**********************************************************
  * Private kernel functions                               *
@@ -82,30 +83,29 @@ int print_char(char c, int col, int row, char attr) {
     if (c == '\n') {
         row = get_offset_row(offset);
         offset = get_offset(0, row+1);
-    } else if (c == 0x08) { /* Backspace*/
-		vidmem[offset] = ' ';
-		vidmem[offset+1] = attr;
-	} else {
+    } else if (c == 0x08) { /* Backspace */
+        vidmem[offset] = ' ';
+        vidmem[offset+1] = attr;
+    } else {
         vidmem[offset] = c;
         vidmem[offset+1] = attr;
         offset += 2;
     }
 
-	//checks if offset is bigger than the screen size and scrolls if so
-	if (offset >= MAX_ROWS * MAX_COLS * 2){
-		int i;
-		for (i = 1; i < MAX_ROWS; i++) {
-			memory_copy((uint8_t*) (get_offset(0, i) + VIDEO_ADDRESS),
-						(uint8_t*) (get_offset(0,i - 1) + VIDEO_ADDRESS),
-						MAX_COLS * 2);
-		}
+    /* Check if the offset is over screen size and scroll */
+    if (offset >= MAX_ROWS * MAX_COLS * 2) {
+        int i;
+        for (i = 1; i < MAX_ROWS; i++) 
+            memcpy((uint8_t*)(get_offset(0, i) + VIDEO_ADDRESS),
+                        (uint8_t*)(get_offset(0, i-1) + VIDEO_ADDRESS),
+                        MAX_COLS * 2);
 
-		char* last_line = (char *)(get_offset(0, MAX_ROWS - 1) + VIDEO_ADDRESS);
-		for (i = 0; i < MAX_COLS * 2; i++)
-			last_line[i] = 0;
+        /* Blank last line */
+        char *last_line = (char*) (get_offset(0, MAX_ROWS-1) + (uint8_t*) VIDEO_ADDRESS);
+        for (i = 0; i < MAX_COLS * 2; i++) last_line[i] = 0;
 
-		offset -= MAX_COLS * 2;
-	}
+        offset -= 2 * MAX_COLS;
+    }
 
     set_cursor_offset(offset);
     return offset;
@@ -127,9 +127,9 @@ void set_cursor_offset(int offset) {
     /* Similar to get_cursor_offset, but instead of reading we write data */
     offset /= 2;
     port_byte_out(REG_SCREEN_CTRL, 14);
-    port_byte_out(REG_SCREEN_DATA, (unsigned char)(offset >> 8));
+    port_byte_out(REG_SCREEN_DATA, (uint8_t)(offset >> 8));
     port_byte_out(REG_SCREEN_CTRL, 15);
-    port_byte_out(REG_SCREEN_DATA, (unsigned char)(offset & 0xff));
+    port_byte_out(REG_SCREEN_DATA, (uint8_t)(offset & 0xff));
 }
 
 void clear_screen() {

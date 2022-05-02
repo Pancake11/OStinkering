@@ -4,10 +4,10 @@
 #include <stdint.h>
 #include <stddef.h>
 
-void memory_copy(uint8_t *source, uint8_t *dest, int nbytes);
-void memory_set(uint8_t *dest, uint8_t val, uint32_t len);
-
 //no free implemented yet
 uint32_t kmalloc(size_t size, int align, uint32_t *phys_addr);
-
+void* memmove(void* dstptr, const void* srcptr, size_t size);
+int memcmp(const void* aptr, const void* bptr, size_t size);
+void* memset(void* bufptr, int value, size_t size);
+void* memcpy(void* dstptr, const void* srcptr, size_t size);
 #endif
